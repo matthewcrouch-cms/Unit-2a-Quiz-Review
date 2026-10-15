@@ -129,7 +129,7 @@ const Q = [
   { set:0, hist:true, text:"The histogram below displays the results of 100 simulated trials. Based on the histogram, what is the estimated probability of getting one or fewer “free drink” stamps in 20 visits, assuming the shop's claim is true?",
     choices:["0.01","0.06","0.11","0.21"], answer:2,
     explain:"In the histogram, 1 trial had 0 stamps and 10 trials had 1 stamp. That is 1 + 10 = 11 trials out of 100, so the estimated probability is 0.11." },
-  { set:0, hist:true, text:"Based on the simulation results, which of the following is the most appropriate conclusion?",
+  { set:0, hist:true, text:"The histogram below shows the same 100 simulated trials from the previous question. Based on the simulation results, which of the following is the most appropriate conclusion?",
     choices:[
       "Maya has convincing statistical evidence that the shop's claim is false, because getting 1 or fewer “free drink” stamps in 20 visits would rarely happen by chance.",
       "Maya does not have convincing statistical evidence that the shop's claim is false, because getting 1 or fewer “free drink” stamps in 20 visits could reasonably happen by chance.",
@@ -316,7 +316,7 @@ function questionHTML(){
   const fb=S.fb;
   let h=`<div class="ctx">${SETS[q.set].ctx}</div>`;
   h+=`<p class="qtext">${S.qi+1}. ${q.text}</p>`;
-  if(q.hist) h+=`<div class="hist">${histSVG()}</div>`;
+  if(q.hist) h+=`<div class="hist">${histSVG()}<p class="small" style="text-align:center;margin:4px 0 0">Results of 100 simulated trials</p></div>`;
   h+='<div class="choices">';
   q.choices.forEach((c,i)=>{
     let cls='choice', tag='';
