@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unit 2a Quiz Review</title>
+<style>
+:root{
+  --bg:#f6f8f8; --card:#ffffff; --text:#1d2b2a; --muted:#5b6b69; --line:#cfdad8;
+  --accent:#2fa89b; --accent-dark:#1f7f75; --accent-soft:#dff3f0;
+  --good:#1e7a3c; --good-soft:#dff3e5; --bad:#b3261e; --bad-soft:#fbe4e2;
+  --x:#1f7f75; --o:#c2571a;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#121a19; --card:#1b2625; --text:#e6eeed; --muted:#9fb1ae; --line:#334442;
+    --accent:#3cc3b5; --accent-dark:#6fdccf; --accent-soft:#1d3a37;
+    --good:#6fd08c; --good-soft:#1c3a27; --bad:#ff8a80; --bad-soft:#40201e;
+    --x:#6fdccf; --o:#ffa56b;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.5;padding:16px}
+.wrap{max-width:1000px;margin:0 auto}
+h1{font-size:1.5rem;margin:0 0 2px}
+h2{font-size:1.15rem;margin:0 0 8px}
+.sub{color:var(--muted);margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:minmax(260px,360px) 1fr;gap:16px;align-items:start}
+@media (max-width:760px){.grid{grid-template-columns:1fr}}
+button{font:inherit;cursor:pointer}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:10px 18px;font-weight:600}
+@media (prefers-color-scheme: dark){.btn{color:#0b1514}}
+.btn:hover{background:var(--accent-dark);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.alt{background:transparent;color:var(--accent-dark);border:2px solid var(--accent)}
+.btn.alt:hover{background:var(--accent-soft)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.status{display:flex;gap:14px;flex-wrap:wrap;justify-content:space-between;align-items:center;margin-bottom:14px}
+.pill{background:var(--accent-soft);border-radius:999px;padding:4px 12px;font-weight:600;font-size:.9rem}
+.mark-x{color:var(--x);font-weight:800}
+.mark-o{color:var(--o);font-weight:800}
+/* board */
+.board{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;max-width:340px;margin:0 auto;aspect-ratio:1/1}
+.cell{background:var(--card);border:2px solid var(--line);border-radius:10px;font-size:clamp(2rem,9vw,3.4rem);font-weight:800;display:flex;align-items:center;justify-content:center;color:var(--text);padding:0}
+.cell.x{color:var(--x)} .cell.o{color:var(--o)}
+.cell.open{border-color:var(--accent);background:var(--accent-soft)}
+.cell.open:hover{background:var(--accent);}
+.cell.sel{outline:4px solid var(--accent);outline-offset:-4px}
+.cell.win{background:var(--good-soft);border-color:var(--good)}
+.cell:disabled{cursor:default}
+.cell.stolen::after{content:"";}
+/* question */
+.ctx{background:var(--accent-soft);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:.95rem}
+.ctx p{margin:0 0 6px}
+.qtext{font-weight:600;margin:0 0 10px}
+.choices{display:grid;gap:8px;margin-bottom:12px}
+.choice{display:flex;gap:10px;text-align:left;background:var(--card);color:var(--text);border:2px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+.choice:hover:not(:disabled){border-color:var(--accent)}
+.choice.picked{border-color:var(--accent);background:var(--accent-soft)}
+.choice.correct{border-color:var(--good);background:var(--good-soft)}
+.choice.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.choice:disabled{cursor:default}
+.letter{font-weight:700;min-width:1.8em}
+.tag{font-size:.78rem;font-weight:700;margin-left:auto;white-space:nowrap;align-self:center}
+.fb{border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.fb.good{background:var(--good-soft)} .fb.bad{background:var(--bad-soft)}
+.fb p{margin:0 0 6px}
+.banner{background:var(--accent);color:#fff;border-radius:10px;padding:12px 14px;margin-bottom:12px;font-weight:700}
+@media (prefers-color-scheme: dark){.banner{color:#0b1514}}
+table.data{border-collapse:collapse;margin:8px auto;background:var(--card)}
+table.data th,table.data td{border:1px solid var(--line);padding:4px 12px;text-align:center}
+table.data caption{font-weight:700;padding-bottom:4px}
+.hist{max-width:100%;overflow-x:auto;margin:6px 0 12px}
+.hist svg{max-width:100%;height:auto;display:block;margin:0 auto}
+.rps button{font-size:1.1rem;padding:14px 22px}
+input[type=text]{font:inherit;padding:8px 10px;border:2px solid var(--line);border-radius:8px;background:var(--card);color:var(--text);width:100%;max-width:320px}
+ul.rules{margin:6px 0 0 18px;padding:0}
+.res li{margin:4px 0}
+.small{font-size:.85rem;color:var(--muted)}
+@media print{
+  body{background:#fff;color:#000;padding:0}
+  .noprint{display:none!important}
+  .card{border:1px solid #999}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Unit 2a Quiz Review</h1>
+  <p class="sub">Solo version for students who missed the in-class game. You play against the computer.</p>
+  <div id="app"></div>
+  <p class="small noprint">Review questions adapted from Math Medic.</p>
+</div>
+
+<script>
+/* ---------- Settings ---------- */
+const COMPUTER_ACCURACY = 0.7;   // chance the computer answers a question correctly (0 to 1)
+
+/* ---------- Content ---------- */
+const HIST = [1,10,13,21,26,14,7,6,1,1]; // frequencies for 0..9 free drink stamps (100 trials)
+
+const SETS = [
+  { title:"Set 1", ctx:`
+    <p>A coffee shop claims that one in five customers who order a latte receives a "free drink" stamp on their cup. Maya is skeptical and decides to keep track. Over her next 20 visits, she receives only one free drink stamp. To investigate whether the shop's claim is true, her statistics class runs a simulation assuming the claim is correct.</p>` },
+  { title:"Set 2", ctx:`
+    <p>At a local music festival, 50 randomly selected attendees were asked their age group and their favorite genre performed at the festival. The results are shown in the table below.</p>
+    <table class="data">
+      <caption>Festival Attendee Survey</caption>
+      <tr><th></th><th>Country</th><th>Rock</th><th>Hip-Hop</th><th>Total</th></tr>
+      <tr><th>Teen</th><td>4</td><td>8</td><td>13</td><td>25</td></tr>
+      <tr><th>Adult</th><td>11</td><td>9</td><td>5</td><td>25</td></tr>
+      <tr><th>Total</th><td>15</td><td>17</td><td>18</td><td>50</td></tr>
+    </table>` },
+  { title:"Set 3", ctx:`
+    <p>A standard bag of M&amp;M’s contains candies in six colors: red, orange, yellow, green, blue, and brown. According to the manufacturer, 40% of candies are blue or green, 34% are orange or yellow, and the remaining candies are split equally between red and brown. A single candy is randomly selected from the bag.</p>` }
+];
+
+const Q = [
+  { set:0, text:"Which of the following best describes how a single trial of the simulation should be set up?",
+    choices:[
+      "Use a spinner with 5 equal sections, numbered 1–5. Spin once and record whether the result is a 1.",
+      "Use a random number generator to produce 20 integers from 1–5. Record the number of 1s.",
+      "Flip a coin 20 times. Record the number of heads.",
+      "Draw a card from a standard deck 20 times. Record the number of aces."],
+    answer:1,
+    explain:"Each visit has a 1-in-5 chance of a stamp, so the integers 1–5 (with 1 meaning “stamp”) model one visit. One trial is 20 visits, so generate 20 integers and count the 1s." },
+  { set:0, hist:true, text:"The histogram below displays the results of 100 simulated trials. Based on the histogram, what is the estimated probability of getting one or fewer “free drink” stamps in 20 visits, assuming the shop's claim is true?",
+    choices:["0.01","0.06","0.11","0.21"], answer:2,
+    explain:"In the histogram, 1 trial had 0 stamps and 10 trials had 1 stamp. That is 1 + 10 = 11 trials out of 100, so the estimated probability is 0.11." },
+  { set:0, hist:true, text:"Based on the simulation results, which of the following is the most appropriate conclusion?",
+    choices:[
+      "Maya has convincing statistical evidence that the shop's claim is false, because getting 1 or fewer “free drink” stamps in 20 visits would rarely happen by chance.",
+      "Maya does not have convincing statistical evidence that the shop's claim is false, because getting 1 or fewer “free drink” stamps in 20 visits could reasonably happen by chance.",
+      "Maya has proven that the shop's claim is false because she did not receive the expected number of “free drink” stamps.",
+      "Maya has convincing statistical evidence that the shop's claim is true because her result was close to the expected number of “free drink” stamps."],
+    answer:1,
+    explain:"About 11% of the simulated trials gave 1 or fewer stamps, so Maya's result is not unusual if the claim is true. That is not convincing evidence against the claim. Also, a simulation can never prove a claim false (or true)." },
+  { set:1, text:"Based on the table, what is the probability that a randomly selected attendee prefers Hip-Hop?",
+    choices:["0.26","0.36","0.50","0.52"], answer:1,
+    explain:"18 of the 50 attendees prefer Hip-Hop: 18/50 = 0.36." },
+  { set:1, text:"Based on the table, what is the probability that a randomly selected attendee is a teen or prefers Hip-Hop?",
+    choices:["0.26","0.36","0.60","0.86"], answer:2,
+    explain:"P(teen or Hip-Hop) = 25/50 + 18/50 − 13/50 = 30/50 = 0.60. Subtract the 13 teens who prefer Hip-Hop so they are not counted twice." },
+  { set:1, text:"Based on the table, what is the probability that a randomly selected attendee is a teen and prefers Rock?",
+    choices:["0.16","0.32","0.47","0.50"], answer:0,
+    explain:"8 of the 50 attendees are teens who prefer Rock: 8/50 = 0.16." },
+  { set:2, text:"What is the probability that the selected candy is red or brown?",
+    choices:["0.13","0.26","0.34","0.40"], answer:1,
+    explain:"40% + 34% = 74% of candies are blue, green, orange, or yellow. That leaves 26% for red and brown together, so P(red or brown) = 0.26. (0.13 would be just one of those two colors.)" },
+  { set:2, text:"Are the events “selecting a blue or green candy” and “selecting an orange or yellow candy” mutually exclusive? Which of the following correctly justifies the answer?",
+    choices:[
+      "No, because blue, green, orange, and yellow are all possible outcomes.",
+      "No, because P(blue or green) + P(orange or yellow) = 0.74, which is less than 1.",
+      "Yes, because a single candy cannot be both in the blue/green group and the orange/yellow group at the same time.",
+      "Yes, because P(blue or green) + P(orange or yellow) ≠ 1."],
+    answer:2,
+    explain:"Mutually exclusive events cannot happen at the same time. One candy can't be in both color groups. Whether the probabilities add up to 1 has nothing to do with it." },
+  { set:2, text:"Suppose a second candy is selected at random after the first is replaced. What is the probability that both candies are blue or green?",
+    choices:["0.40","0.80","0.16","0.20"], answer:2,
+    explain:"Because the first candy is replaced, the two selections are independent: 0.40 × 0.40 = 0.16." }
+];
+
+const LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+const L = ['A','B','C','D'];
+let S = {};
+
+/* ---------- State helpers ---------- */
+function reset(name){
+  S = { name:name||'', phase:'rps', rpsMsg:'', me:null, opp:null, qi:0,
+        board:Array(9).fill(null), sel:null, chosen:null, mode:null,
+        winner:null, winLine:null, results:[], fb:null };
+}
+function other(m){ return m==='X' ? 'O' : 'X'; }
+function turnOf(qi){
+  const set = Math.floor(qi/3), p = qi%3;
+  const first = (set%2===0) ? 'X' : 'O';   // X first in Sets 1 and 3, O first in Set 2
+  return p===1 ? other(first) : first;
+}
+function checkWin(){
+  if(S.winner) return false;
+  for(const ln of LINES){
+    const [a,b,c]=ln;
+    if(S.board[a] && S.board[a]===S.board[b] && S.board[a]===S.board[c]){
+      S.winner=S.board[a]; S.winLine=ln; return true;
+    }
+  }
+  return false;
+}
+function mk(m){ return `<span class="mark-${m.toLowerCase()}">${m}</span>`; }
+
+/* ---------- Rock Paper Scissors ---------- */
+function playRPS(choice){
+  const opts=['Rock','Paper','Scissors'];
+  const c=opts[Math.floor(Math.random()*3)];
+  const beats={Rock:'Scissors',Paper:'Rock',Scissors:'Paper'};
+  if(choice===c){ S.rpsMsg=`You both chose ${c}. It's a tie, so go again!`; }
+  else if(beats[choice]===c){ S.rpsMsg=`You chose ${choice} and the computer chose ${c}. You win! Pick your letter.`; S.phase='side'; }
+  else {
+    S.rpsMsg=`You chose ${choice} and the computer chose ${c}. The computer wins.`;
+    const cp=Math.random()<.5?'X':'O'; S.opp=cp; S.me=other(cp);
+    S.rpsMsg+=` It picks to be Player ${cp}, so you are Player ${S.me}.`;
+    S.phase='side';
+  }
+  render();
+}
+function chooseSide(m){ S.me=m; S.opp=other(m); startGame(); }
+function startGame(){ S.phase='game'; nextTurn(); }
+
+/* ---------- Game flow ---------- */
+function nextTurn(){
+  S.sel=null; S.chosen=null; S.fb=null;
+  if(S.qi>=9){ S.phase='end'; render(); return; }
+  if(S.winner){ S.mode='practice'; render(); return; }
+  if(turnOf(S.qi)===S.me){ S.mode='pick'; render(); }
+  else { S.mode='comp'; render(); setTimeout(compMove,1200); }
+}
+function pickSquare(i){
+  if(S.mode!=='pick' || S.sel!==null || S.board[i]) return;
+  S.sel=i; render();
+}
+function choose(i){
+  if(S.chosen!==null && S.fb) return;
+  S.chosen=i; render();
+}
+function submitAnswer(){
+  if(S.chosen===null) return;
+  const q=Q[S.qi], ok=S.chosen===q.answer;
+  let won=false;
+  if(S.mode==='pick'){ S.board[S.sel]= ok ? S.me : S.opp; won=checkWin(); }
+  S.results.push({qi:S.qi, ok});
+  S.fb={who:'me', ok, justWon:won, practice:S.mode==='practice'};
+  S.mode='fb'; render();
+}
+function pickCell(){
+  const empty=[...Array(9).keys()].filter(i=>!S.board[i]);
+  const tryLine=(m)=>{
+    for(const [a,b,c] of LINES){
+      const v=[S.board[a],S.board[b],S.board[c]];
+      if(v.filter(x=>x===m).length===2 && v.includes(null)){
+        return [a,b,c][v.indexOf(null)];
+      }
+    }
+    return null;
+  };
+  let c=tryLine(S.opp); if(c!==null) return c;
+  c=tryLine(S.me); if(c!==null) return c;
+  if(empty.includes(4)) return 4;
+  const corners=[0,2,6,8].filter(i=>empty.includes(i));
+  if(corners.length) return corners[Math.floor(Math.random()*corners.length)];
+  return empty[Math.floor(Math.random()*empty.length)];
+}
+function compMove(){
+  const q=Q[S.qi];
+  const cell=pickCell(); S.sel=cell;
+  const ok=Math.random()<COMPUTER_ACCURACY;
+  let ans=q.answer;
+  if(!ok){ const w=[0,1,2,3].filter(i=>i!==q.answer); ans=w[Math.floor(Math.random()*w.length)]; }
+  S.board[cell]= ok ? S.opp : S.me;
+  const won=checkWin();
+  S.results.push({qi:S.qi, ok:null, comp:true});
+  S.fb={who:'comp', ok, ans, justWon:won};
+  S.mode='fb'; render();
+}
+function next(){ S.qi++; nextTurn(); window.scrollTo({top:0}); }
+
+/* ---------- Views ---------- */
+function histSVG(){
+  const W=440,H=290,ml=48,mr=14,mt=12,mb=50,pw=W-ml-mr,ph=H-mt-mb,ymax=26;
+  const unit=pw/10, yS=v=>mt+ph-(v/ymax)*ph;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Histogram of 100 simulated trials. Frequencies for 0 through 9 stamps: ${HIST.join(', ')}">`;
+  for(let v=0;v<=ymax;v+=2){
+    s+=`<line x1="${ml}" x2="${W-mr}" y1="${yS(v)}" y2="${yS(v)}" stroke="currentColor" opacity=".12"/>`;
+    s+=`<text x="${ml-6}" y="${yS(v)+4}" font-size="11" text-anchor="end" fill="currentColor">${v}</text>`;
+  }
+  HIST.forEach((f,i)=>{
+    const x=ml+i*unit+unit*0.0+unit*0.0; // bars centered on label
+    const bx=ml+(i+0.5-0.5)*unit;
+    if(f>0) s+=`<rect x="${bx}" y="${yS(f)}" width="${unit}" height="${yS(0)-yS(f)}" fill="#36bdb0" stroke="#1d2b2a" stroke-width="1"/>`;
+    s+=`<text x="${bx+unit/2}" y="${yS(0)+16}" font-size="12" text-anchor="middle" fill="currentColor">${i}</text>`;
+  });
+  s+=`<line x1="${ml}" x2="${ml}" y1="${mt}" y2="${yS(0)}" stroke="currentColor"/>`;
+  s+=`<line x1="${ml}" x2="${W-mr}" y1="${yS(0)}" y2="${yS(0)}" stroke="currentColor"/>`;
+  s+=`<text x="${ml+pw/2}" y="${H-8}" font-size="12" text-anchor="middle" fill="currentColor">Number of “Free Drink” Stamps</text>`;
+  s+=`<text transform="translate(13 ${mt+ph/2}) rotate(-90)" font-size="12" text-anchor="middle" fill="currentColor">Frequency</text>`;
+  return s+`</svg>`;
+}
+
+function boardHTML(interactive){
+  let h='<div class="board" role="grid" aria-label="Tic-Tac-Toe board">';
+  for(let i=0;i<9;i++){
+    const v=S.board[i];
+    const cls=['cell'];
+    if(v) cls.push(v.toLowerCase());
+    const canPick = interactive && S.mode==='pick' && S.sel===null && !v;
+    if(canPick) cls.push('open');
+    if(S.sel===i) cls.push('sel');
+    if(S.winLine && S.winLine.includes(i)) cls.push('win');
+    const label=`Row ${Math.floor(i/3)+1}, column ${i%3+1}, ${v?('marked '+v):'empty'}`;
+    h+=`<button class="${cls.join(' ')}" ${canPick?`onclick="pickSquare(${i})"`:'disabled'} aria-label="${label}">${v||(S.sel===i?'?':'')}</button>`;
+  }
+  return h+'</div>';
+}
+
+function statusBar(){
+  const set=Math.floor(S.qi/3)+1;
+  const t = S.winner ? '' : (S.qi<9 ? `<span class="pill">${turnOf(S.qi)===S.me?'Your turn':'Computer’s turn'}</span>` : '');
+  return `<div class="status">
+    <div class="row"><span class="pill">Question ${S.qi+1} of 9</span><span class="pill">Set ${set}</span>${t}</div>
+    <div>You: ${mk(S.me)} &nbsp;·&nbsp; Computer: ${mk(S.opp)}</div></div>`;
+}
+
+function questionHTML(){
+  const q=Q[S.qi];
+  const fb=S.fb;
+  let h=`<div class="ctx">${SETS[q.set].ctx}</div>`;
+  h+=`<p class="qtext">${S.qi+1}. ${q.text}</p>`;
+  if(q.hist) h+=`<div class="hist">${histSVG()}</div>`;
+  h+='<div class="choices">';
+  q.choices.forEach((c,i)=>{
+    let cls='choice', tag='';
+    if(!fb){ if(S.chosen===i) cls+=' picked'; }
+    else {
+      if(i===q.answer){ cls+=' correct'; tag='<span class="tag">✓ Correct answer</span>'; }
+      if(fb.who==='me' && i===S.chosen && i!==q.answer){ cls+=' wrong'; tag='<span class="tag">Your answer</span>'; }
+      if(fb.who==='me' && i===S.chosen && i===q.answer){ tag='<span class="tag">✓ Your answer</span>'; }
+      if(fb.who==='comp' && i===fb.ans){ if(i!==q.answer) cls+=' wrong'; tag=`<span class="tag">Computer’s answer${i===q.answer?' ✓':''}</span>`; }
+    }
+    const dis = (S.mode==='comp'||fb) ? 'disabled' : '';
+    h+=`<button class="${cls}" ${dis} onclick="choose(${i})"><span class="letter">(${L[i]})</span><span>${c}</span>${tag}</button>`;
+  });
+  h+='</div>';
+  if(!fb && S.mode!=='comp'){
+    h+=`<button class="btn" onclick="submitAnswer()" ${S.chosen===null?'disabled':''}>Submit answer</button>`;
+  }
+  if(fb) h+=feedbackHTML(q);
+  return h;
+}
+
+function feedbackHTML(q){
+  const fb=S.fb;
+  let msg;
+  if(fb.practice){
+    msg = fb.ok ? `<p><strong>Correct!</strong></p>` : `<p><strong>Not quite.</strong> The correct answer is (${L[q.answer]}).</p>`;
+  } else if(fb.who==='me'){
+    msg = fb.ok
+      ? `<p><strong>Correct!</strong> The square is yours (${mk(S.me)}).</p>`
+      : `<p><strong>Not quite.</strong> The correct answer is (${L[q.answer]}). The computer takes that square (${mk(S.opp)}).</p>`;
+  } else {
+    msg = fb.ok
+      ? `<p><strong>The computer answered (${L[fb.ans]}), which is correct.</strong> It takes the square (${mk(S.opp)}).</p>`
+      : `<p><strong>The computer answered (${L[fb.ans]}), which is incorrect.</strong> The correct answer is (${L[q.answer]}), so you get that square (${mk(S.me)}).</p>`;
+  }
+  let h=`<div class="fb ${fb.ok?'good':'bad'}">${msg}<p>${q.explain}</p></div>`;
+  if(fb.justWon){
+    h+=`<div class="banner">Tic-Tac-Toe! ${S.winner===S.me?'You win! 🎉':'The computer wins this one.'}</div>`;
+  }
+  const last=S.qi+1>=9;
+  const label= last ? 'See results' : (S.winner ? (fb.justWon?'Finish the remaining questions':'Next question') : 'Next question');
+  h+=`<button class="btn" onclick="next()">${label}</button>`;
+  return h;
+}
+
+function gameView(){
+  let left=`<div class="card">${boardHTML(true)}
+    <p class="small" style="text-align:center;margin:10px 0 0">${S.winner?'Game over. Finish the questions for practice.':'Wrong answer? Your opponent gets the square.'}</p></div>`;
+  let right='<div class="card">';
+  if(S.mode==='pick' && S.sel===null){
+    right+=`<h2>Your turn</h2><p>Choose any empty square on the board. Then you will answer the question to try to claim it.</p><div class="ctx">${SETS[Q[S.qi].set].ctx}</div>`;
+  } else if(S.mode==='comp' && !S.fb){
+    right+=`<h2>Computer’s turn</h2><p>The computer is choosing a square and answering…</p>`;
+  } else if(S.mode==='practice' && !S.fb){
+    right+=`<h2>Finish the questions</h2>`+questionHTML();
+  } else {
+    right+=questionHTML();
+  }
+  right+='</div>';
+  return statusBar()+`<div class="grid">${left}${right}</div>`;
+}
+
+function rpsView(){
+  return `<div class="card rps">
+    <h2>How this works</h2>
+    <ul class="rules">
+      <li>Play Rock-Paper-Scissors against the computer. The winner chooses to be Player X or Player O.</li>
+      <li>Player X goes first in Set 1. Going first alternates for Sets 2 and 3.</li>
+      <li>On your turn, pick an empty square, then answer the question. Correct: the square is yours. Incorrect: the computer takes it.</li>
+      <li>On the computer’s turn, it picks a square and answers. If it gets it wrong, you get the square.</li>
+      <li>First to get three in a row (row, column, or diagonal) wins. If nobody does after all 9 questions, the player with the most squares wins.</li>
+      <li>If someone wins early, you will still finish the remaining questions for practice.</li>
+    </ul>
+  </div>
+  <div class="card rps">
+    <h2>Your name (optional)</h2>
+    <p><input type="text" id="nm" placeholder="First and last name" value="${S.name.replace(/"/g,'&quot;')}" oninput="S.name=this.value"></p>
+    <h2>Rock-Paper-Scissors</h2>
+    ${S.rpsMsg?`<p><strong>${S.rpsMsg}</strong></p>`:'<p>Choose one:</p>'}
+    <div class="row">
+      <button class="btn alt" onclick="playRPS('Rock')">🪨 Rock</button>
+      <button class="btn alt" onclick="playRPS('Paper')">📄 Paper</button>
+      <button class="btn alt" onclick="playRPS('Scissors')">✂️ Scissors</button>
+    </div></div>`;
+}
+
+function sideView(){
+  let h=`<div class="card"><h2>Rock-Paper-Scissors result</h2><p><strong>${S.rpsMsg}</strong></p>`;
+  if(S.me){
+    h+=`<p>Player X goes first in Set 1.</p><button class="btn" onclick="startGame()">Start the game</button>`;
+  } else {
+    h+=`<p>Player X goes first in Set 1.</p><div class="row">
+      <button class="btn" onclick="chooseSide('X')">I’ll be Player X (go first)</button>
+      <button class="btn alt" onclick="chooseSide('O')">I’ll be Player O</button></div>`;
+  }
+  return h+'</div>';
+}
+
+function endView(){
+  const mine=S.board.filter(v=>v===S.me).length, theirs=S.board.filter(v=>v===S.opp).length;
+  let headline, how;
+  if(S.winner){ headline = S.winner===S.me ? 'You won! 🎉' : 'The computer won this round.'; how='Tic-Tac-Toe'; }
+  else { headline = mine>theirs ? 'You won! 🎉' : 'The computer won this round.'; how=`No Tic-Tac-Toe, so most squares wins (you ${mine}, computer ${theirs})`; }
+  const mineRes=S.results.filter(r=>!r.comp);
+  const right=mineRes.filter(r=>r.ok).length;
+  let list='';
+  mineRes.forEach(r=>{
+    list+=`<li>Question ${r.qi+1}: ${r.ok?'✓ Correct':`✗ Incorrect (correct answer: ${L[Q[r.qi].answer]})`}</li>`;
+  });
+  return `<div class="card res">
+    <h2>${S.name?S.name+' — ':''}Results</h2>
+    <p><strong>${headline}</strong> <span class="small">${how}</span></p>
+    <div style="margin:12px 0">${boardHTML(false)}</div>
+    <p><strong>Questions you answered correctly: ${right} of ${mineRes.length}</strong></p>
+    <ul>${list}</ul>
+    <p class="small">Questions the computer answered are not counted in your score. Take a screenshot or print this page to show your teacher.</p>
+    <div class="row noprint">
+      <button class="btn" onclick="window.print()">Print this page</button>
+      <button class="btn alt" onclick="reset(S.name);render()">Play again</button>
+    </div></div>`;
+}
+
+function render(){
+  const app=document.getElementById('app');
+  if(S.phase==='rps') app.innerHTML=rpsView();
+  else if(S.phase==='side') app.innerHTML=sideView();
+  else if(S.phase==='end') app.innerHTML=endView();
+  else app.innerHTML=gameView();
+}
+
+reset(); render();
+</script>
+</body>
+</html>
